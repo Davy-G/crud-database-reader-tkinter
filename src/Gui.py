@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-from Db import Db
+from src.Db import Db
 
 
 class Gui(Tk):
@@ -10,7 +10,7 @@ class Gui(Tk):
         self.resizable(False, False)
         self.title(title)
         self.frame = ttk.Frame(self)
-        self.database = Db('db/data.db')
+        self.database = Db('../db/data.db')
 
     def __widget(self, size: str = "200x200", text: str = None):
         widget = Gui(size, text)
