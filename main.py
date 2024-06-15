@@ -1,17 +1,11 @@
-from Db import Db
-import Gui
-
-
-global buttonclicked
-
-
-
-def login():
-    print("clicc")
+from Gui import Gui
 
 
 def main():
-    app = App()
+    app = Gui("500x500", "Db Manager")
+    app.main_page()
+
+
 
 if __name__ == '__main__':
     main()

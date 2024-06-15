@@ -12,12 +12,13 @@ class Db:
         self.cursor.execute(query, (name, surname, pasword, email))
         self.conn.commit()
 
-    def read(self, email: str):
-        self.cursor.execute("SELECT * FROM users where Email = (?)", (email,))
+    def read(self, email: str, password: str):
+        self.cursor.execute("SELECT * FROM Users where Email = (?) and Password = (?)", (email, password))
         return self.cursor.fetchall()
 
     def update(self, name: str, surname: str, pasword: str, email: str):
-        self.cursor.execute("Update users set name = (?), surname = (?), password = (?) where Email = (?)", (name, surname, pasword, email))
+        self.cursor.execute("Update users set name = (?), surname = (?), password = (?) where Email = (?)",
+                            (name, surname, pasword, email))
         self.conn.commit()
         return self.cursor.fetchall()
 
