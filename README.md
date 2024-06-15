@@ -1,6 +1,6 @@
 # CRUD Database reader on python
 ## Description
- A university project that i made
+ A project made for university
 
  ## Features
  <ul>
