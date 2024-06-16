@@ -10,6 +10,8 @@ class Gui(Tk):
         self.cursor = Actions()
         self.user = None
         self.title(title)
+        self.main_page()
+        self.mainloop()
 
     def cls(self):
         for widget in self.winfo_children():
@@ -23,7 +25,6 @@ class Gui(Tk):
         btn = Button(self.frame, text='Log Out', command=self.main_page)
         btn.bind('<Button-1>', lambda event: self.user.clear())
         btn.pack()
-        self.mainloop()
 
     def register_page(self):
         self.cls()
@@ -42,8 +43,8 @@ class Gui(Tk):
         password.pack()
         button = Button(self.frame, text='Register')
         button.bind('<Button-1>', lambda event: self.cursor.register([name.get(), surname.get(), password.get(), email.get()]))
+        button = Button(self.frame, text='Back to login page', command=self.main_page)
         button.pack()
-        self.mainloop()
 
     def main_page(self):
         self.cls()
@@ -58,9 +59,7 @@ class Gui(Tk):
         button.bind('<Button-1>', lambda event: self.__handle_login([email.get(), password.get()]))
         button.pack()
         Label(self.frame, text='Dont have an account?').pack()
-        register = Button(self.frame, text='Register', command=self.register_page)
-        register.pack()
-        self.mainloop()
+        Button(self.frame, text='Register', command=self.register_page).pack()
 
     def __handle_login(self, credentials: list):
         self.user = self.cursor.login(credentials)

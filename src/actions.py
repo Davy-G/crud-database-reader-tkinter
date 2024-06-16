@@ -7,8 +7,6 @@ class Actions:
     def __init__(self):
         self.database = Db('../db/data.db')
 
-
-
     def widget(self, text: str = None):
         width = len(text) * 10
         height = width // 2
