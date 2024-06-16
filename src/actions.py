@@ -7,14 +7,17 @@ class Actions:
     def __init__(self):
         self.database = Db('../db/data.db')
 
+
+
     def widget(self, text: str = None):
         width = len(text) * 10
         height = width // 2
         widget = Tk(f"{width}x{height}", text)
+        widget.title("Message")
+        widget.resizable(False, False)
         Label(widget, text=text).pack()
         button = Button(widget, text="Ok", command=widget.destroy)
         button.pack()
-        widget.mainloop()
 
     def register(self, credentials: list):
         validated = self.__validate_data(credentials)
@@ -33,15 +36,15 @@ class Actions:
     def login(self, credentials: list):
         validated = self.__validate_data(credentials)
         if not validated:
-            return
+            return None
         credentials[1] = Hasher.hash_password(credentials[1])
         user = self.database.read(*credentials)
         if user:
             self.widget(f"Welcome {user[0][1]}")
-            return
+            return user
         else:
             self.widget("Invalid Credentials")
-            return
+            return None
 
     def __validate_data(self, credentials: list) -> bool:
         if "" in credentials:

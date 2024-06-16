@@ -8,6 +8,7 @@ class Gui(Tk):
         self.geometry(size)
         self.resizable(False, False)
         self.cursor = Actions()
+        self.user = None
         self.title(title)
 
     def cls(self):
@@ -18,7 +19,10 @@ class Gui(Tk):
 
     def cabinet(self):
         self.cls()
-
+        Label(self.frame, text=f'Welcome {self.user[0][1]}').pack()
+        btn = Button(self.frame, text='Log Out', command=self.main_page)
+        btn.bind('<Button-1>', lambda event: self.user.clear())
+        btn.pack()
         self.mainloop()
 
     def register_page(self):
@@ -51,11 +55,14 @@ class Gui(Tk):
         password = Entry(self.frame, show="*")
         password.pack()
         button = Button(self.frame, text='Log In')
-        button.bind('<Button-1>', lambda event: self.cursor.login([email.get(), password.get()]))
+        button.bind('<Button-1>', lambda event: self.__handle_login([email.get(), password.get()]))
         button.pack()
         Label(self.frame, text='Dont have an account?').pack()
         register = Button(self.frame, text='Register', command=self.register_page)
         register.pack()
         self.mainloop()
 
+    def __handle_login(self, credentials: list):
+        self.user = self.cursor.login(credentials)
+        self.cabinet() if self.user is not None else self.main_page()
 
