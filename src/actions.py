@@ -1,5 +1,5 @@
 from Db import Db
-from tkinter import Label, Button, Tk
+from tkinter import *
 from Hash import Hasher
 
 
@@ -7,36 +7,46 @@ class Actions:
     def __init__(self):
         self.database = Db('../db/data.db')
 
-    def widget(self, text: str = None):
+    # TODO add a widget method that will be used to display messages to the user
+    def widget(self, text: str = None, textbox: bool = False, cancel: bool = False, function: object() = None):
         width = len(text) * 10
-        height = width // 2
+        height = width
         widget = Tk(f"{width}x{height}", text)
-        widget.title("Message")
-        widget.resizable(False, False)
-        Label(widget, text=text).pack()
-        button = Button(widget, text="Ok", command=widget.destroy)
-        button.pack()
+        # if we have a textbox and cancel button and a function then we want user to input something
+        if textbox and cancel and function is not None:
+            entr = Entry(widget)
+            entr.pack()
+            Button(widget, text="Cancel", command=widget.destroy).pack()
+            button = Button(widget, text="Ok")
+            button.bind("<Button-1>", lambda event: function(entr.get()))
+            button.pack()
+        else:
+            widget.title("Message")
+            widget.resizable(False, False)
+            Label(widget, text=text).pack()
+            button = Button(widget, text="Ok", command=widget.destroy)
+            button.pack()
 
-    def register(self, credentials: list):
+    def register(self, credentials: dict):
         validated = self.__validate_data(credentials)
         if not validated:
             return
-        email = self.__validate_email(credentials[3])
+        email = self.__validate_email(credentials[["email"]])
         if not email:
             return
-        password = self.__validate_password(credentials[2])
+        password = self.__validate_password(credentials["password"])
         if not password:
             return
-        credentials[2] = Hasher.hash_password(credentials[2])
+        credentials[2] = Hasher.hash_password(credentials["password"])
         self.database.create(*credentials)
         self.widget("User Created")
 
-    def login(self, credentials: list):
+    def login(self, credentials: dict) -> list or None:
         validated = self.__validate_data(credentials)
         if not validated:
             return None
-        credentials[1] = Hasher.hash_password(credentials[1])
-        user = self.database.read(*credentials)
+        credentials["password"] = Hasher.hash_password(credentials["password"])
+        user = self.database.read(*credentials.values())
         if user:
             self.widget(f"Welcome {user[0][1]}")
             return user
@@ -44,8 +54,20 @@ class Actions:
             self.widget("Invalid Credentials")
             return None
 
-    def __validate_data(self, credentials: list) -> bool:
-        if "" in credentials:
+    def delete_account(self, user: dict):
+        self.database.delete(user["email"])
+        self.widget("Account Deleted")
+        user.clear()
+
+    def change_password(self, user: dict):
+        self.widget("Enter new password",True,True, self.change_password)
+        if not self.__validate_password(new_password):
+            return
+        self.database.update(user["name"], user["surname"], Hasher.hash_password(new_password), user["email"])
+        self.widget("Password Changed")
+
+    def __validate_data(self, credentials: dict) -> bool:
+        if "" in credentials.values():
             self.widget("none of the fields can be empty")
             return False
         return True

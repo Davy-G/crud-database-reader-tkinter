@@ -18,13 +18,16 @@ class Gui(Tk):
             widget.destroy()
         self.frame = Frame(self)
         self.frame.pack()
-
+# TODO add delete account and change password options
     def cabinet(self):
         self.cls()
         Label(self.frame, text=f'Welcome {self.user[0][1]}').pack()
         btn = Button(self.frame, text='Log Out', command=self.main_page)
         btn.bind('<Button-1>', lambda event: self.user.clear())
         btn.pack()
+        Button(self.frame, text='Change My Password', command=self.cursor.change_password(user=self.user)).pack()
+        Button(self.frame, text='Delete My Account', command=self.cursor.delete_account(user=self.user)).pack()
+
 
     def register_page(self):
         self.cls()
@@ -42,7 +45,8 @@ class Gui(Tk):
         password = Entry(self.frame, show="*")
         password.pack()
         button = Button(self.frame, text='Register')
-        button.bind('<Button-1>', lambda event: self.cursor.register([name.get(), surname.get(), password.get(), email.get()]))
+        button.bind('<Button-1>', lambda event: self.cursor.register({"name": name.get(), "surname": surname.get(),
+                                                                      "email": email.get(), "password": password.get()}))
         button = Button(self.frame, text='Back to login page', command=self.main_page)
         button.pack()
 
@@ -56,12 +60,12 @@ class Gui(Tk):
         password = Entry(self.frame, show="*")
         password.pack()
         button = Button(self.frame, text='Log In')
-        button.bind('<Button-1>', lambda event: self.__handle_login([email.get(), password.get()]))
+        button.bind('<Button-1>', lambda event: self.__handle_login({"email": email.get(), "password": password.get()}))
         button.pack()
         Label(self.frame, text='Dont have an account?').pack()
         Button(self.frame, text='Register', command=self.register_page).pack()
 
-    def __handle_login(self, credentials: list):
+    def __handle_login(self, credentials: dict):
         self.user = self.cursor.login(credentials)
         self.cabinet() if self.user is not None else self.main_page()
 
