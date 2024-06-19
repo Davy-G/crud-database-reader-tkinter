@@ -3,13 +3,14 @@ from actions import Actions
 from User.User import User
 from PIL import Image
 
+global user
 
 class App(CTk):
     def __init__(self, grid="1000x500", **kwargs):
         super().__init__(**kwargs)
+        self.resizable(False, False)
         self.geometry(grid)
         self.__cursor = Actions()
-        self._user = {}
 
         container = CTkFrame(self)
         container.pack(side="top", fill="both", expand=True)
@@ -105,26 +106,26 @@ class RegistrationPage(CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
-        frame = CTkFrame(self, border_color="red", border_width=5, width=600, height=500)
+        frame = CTkFrame(self, width=400, height=500)
         CTkLabel(frame, text='Register').pack(pady=10)
         CTkLabel(frame, text='Name').pack(pady=10)
 
-        name = CTkEntry(frame)
+        name = CTkEntry(frame,width=300)
         name.pack()
 
         CTkLabel(frame, text='Surname').pack(pady=10)
 
-        surname = CTkEntry(frame)
+        surname = CTkEntry(frame,width=300)
         surname.pack()
 
         CTkLabel(frame, text='Email').pack(pady=10)
 
-        email = CTkEntry(frame)
+        email = CTkEntry(frame,width=300)
         email.pack()
 
         CTkLabel(frame, text='Password').pack(pady=10)
 
-        password = CTkEntry(frame, show="*")
+        password = CTkEntry(frame, show="*",width=300)
         password.pack(pady=10)
 
         button = CTkButton(frame, text='Register', hover_color="green")
@@ -136,6 +137,12 @@ class RegistrationPage(CTkFrame):
         back.pack(pady=10)
         frame.pack_propagate(False)
         frame.pack(side="right")
+        left_frame = CTkFrame(self, width=700, height=500)
+        image = Image.open("Style/images/a.jpg")
+        image = CTkImage(dark_image=image, light_image=image, size=(700, 500))
+        CTkLabel(left_frame, image=image, text="").pack()
+        left_frame.pack_propagate(False)
+        left_frame.pack(side="left")
 
 
 class Cabinet(CTkFrame):
@@ -149,20 +156,18 @@ class Cabinet(CTkFrame):
         # CTkLabel(frame, text=f'Welcome {self.controller._user['name']}').pack()
 
         btn = CTkButton(frame, text='Log Out', command=lambda: controller.show_frame(StartPage))
-        btn.bind('<Button-1>', lambda event: self.controller._user.clear())
+        btn.bind('<Button-1>', lambda event: user.clear())
         btn.pack()
 
         passwd = CTkButton(frame, text='Change My Password')
         passwd.bind('<Button-1>', lambda event: self.controller.__widget(textbox=True, cancel=True,
-                                                                         function=self.controller.__cursor.change_password))
+                                                                 function=self.controller.__cursor.change_password))
         passwd.pack()
 
         delete = CTkButton(frame, text='Delete My Account')
         delete.bind('<Button-1>', lambda event: self.controller.__widget(text="Are you sure?",
-                                                                         function=lambda: self.controller.__cursor.delete_account(
-                                                                             self.controller._user)))
+                                                                         function=lambda: self.controller.__cursor.delete_account(user)))
         delete.pack()
-
         frame.pack(side="right")
 
 
