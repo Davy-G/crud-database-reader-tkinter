@@ -3,14 +3,14 @@ from actions import Actions
 from User.User import User
 from PIL import Image
 
-global user
-
 class App(CTk):
     def __init__(self, grid="1000x500", **kwargs):
         super().__init__(**kwargs)
         self.resizable(False, False)
         self.geometry(grid)
-        self.__cursor = Actions()
+        self.user = User
+        self.title("Db Manager")
+        self.cursor = Actions()
 
         container = CTkFrame(self)
         container.pack(side="top", fill="both", expand=True)
@@ -50,16 +50,16 @@ class App(CTk):
             button = CTkButton(widget, text="Ok", command=widget.destroy)
             button.pack()
 
-    def __cls(self):
-        for widget in self.winfo_children():
-            widget.destroy()
+    # def __cls(self):
+    #     for widget in self.winfo_children():
+    #         widget.destroy()
 
-    def __handle_login(self, credentials: dict):
-        self._user = self.__cursor.login(credentials)
-        self.show_frame(Cabinet) if self._user is not None else self.show_frame(StartPage)
+    def handle_login(self, credentials: dict):
+        self.user = self.cursor.login(credentials)
+        self.show_frame(Cabinet) if self.user is not None else self.show_frame(StartPage)
 
-    def __handle_reg(self, credentials: dict):
-        self._user = self.__cursor.register(credentials)
+    def handle_reg(self, credentials: dict):
+        self.user = self.cursor.register(credentials)
 
 
 class StartPage(CTkFrame):
@@ -81,7 +81,7 @@ class StartPage(CTkFrame):
 
         button = CTkButton(frame, text='Log In')
         button.bind('<Button-1>',
-                    lambda event: controller.__handle_login({"email": email.get(), "password": password.get()}))
+                    lambda event: controller.handle_login({"email": email.get(), "password": password.get()}))
         button.pack(side="top", pady=20)
 
         CTkLabel(frame, text="Don't have an account?").pack(pady=2)
@@ -129,7 +129,7 @@ class RegistrationPage(CTkFrame):
         password.pack(pady=10)
 
         button = CTkButton(frame, text='Register', hover_color="green")
-        button.bind('<Button-1>', lambda event: self.controller.__handle_reg(
+        button.bind('<Button-1>', lambda event: self.controller.handle_reg(
             {"name": name.get(), "surname": surname.get(), "email": email.get(), "password": password.get()}))
         button.pack(pady=10)
 
@@ -156,17 +156,17 @@ class Cabinet(CTkFrame):
         # CTkLabel(frame, text=f'Welcome {self.controller._user['name']}').pack()
 
         btn = CTkButton(frame, text='Log Out', command=lambda: controller.show_frame(StartPage))
-        btn.bind('<Button-1>', lambda event: user.clear())
+        btn.bind('<Button-1>', lambda event: parent.user.clear())
         btn.pack()
 
         passwd = CTkButton(frame, text='Change My Password')
         passwd.bind('<Button-1>', lambda event: self.controller.__widget(textbox=True, cancel=True,
-                                                                 function=self.controller.__cursor.change_password))
+                                                                         function=self.controller.cursor.change_password))
         passwd.pack()
 
         delete = CTkButton(frame, text='Delete My Account')
         delete.bind('<Button-1>', lambda event: self.controller.__widget(text="Are you sure?",
-                                                                         function=lambda: self.controller.__cursor.delete_account(user)))
+                                                                         function=lambda: self.controller.cursor.delete_account(parent.user)))
         delete.pack()
         frame.pack(side="right")
 
