@@ -1,8 +1,9 @@
-from src.Gui import Gui
+from src.Gui import App
 
 
 def main():
-    app = Gui("500x500", "Db Manager")
+    app = App()
+    app.mainloop()
 
 
 if __name__ == '__main__':

@@ -1,27 +1,32 @@
 import sqlite3
+import User.User as User
 
 
 class Db:
     def __init__(self, db_name):
         self.db_name = db_name
-        self.conn = sqlite3.connect(self.db_name)
-        self.cursor = self.conn.cursor()
+        self._conn = sqlite3.connect(self.db_name)
+        self.usr = User.User
+        self._cursor = self._conn.cursor()
 
-    def create(self, name: str, surname: str, password: str, email: str):
-        query = "INSERT INTO Users (name ,surname, password, Email) VALUES (?, ?, ?, ?)"
-        self.cursor.execute(query, (name, surname, password, email))
-        self.conn.commit()
+    def create(self, user: dict) -> None:
+        self._cursor.execute("INSERT INTO Users (name ,surname, password, Email) VALUES (?, ?, ?, ?)"
+                             , (user["name"], user["surname"], user["password"], user["email"]))
+        self._conn.commit()
 
-    def read(self, email: str, password: str):
-        self.cursor.execute("SELECT * FROM Users where email = (?) and password = (?)", (email, password))
-        return self.cursor.fetchall()
+    def read(self, email: str, password: str) -> dict:
+        self._cursor.execute("SELECT * FROM Users where email = (?) and password = (?)",
+                             (email, password))
+        user = self._cursor.fetchall()
+        if user:
+            return self.usr.from_db(user)
+        return {}
 
-    def update(self, name: str, surname: str, pasword: str, email: str):
-        self.cursor.execute("Update users set name = (?), surname = (?), password = (?) where email = (?)",
-                            (name, surname, pasword, email))
-        self.conn.commit()
-        return self.cursor.fetchall()
+    def update(self, user: dict) -> None:
+        self._cursor.execute("Update users set name = (?), surname = (?), password = (?) where email = (?)",
+                             (user["name"], user["surname"], user["password"], user["email"]))
+        self._conn.commit()
 
-    def delete(self, email: str):
-        self.cursor.execute('DELETE FROM users WHERE email = (?)', (email,))
-        self.conn.commit()
+    def delete(self, email: str) -> None:
+        self._cursor.execute('DELETE FROM users WHERE email = (?)', (email,))
+        self._conn.commit()
