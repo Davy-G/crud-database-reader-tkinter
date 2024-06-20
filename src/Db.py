@@ -1,32 +1,37 @@
 import sqlite3
-import User.User as User
+from User import User
+from Exceptions import *
 
 
 class Db:
     def __init__(self, db_name):
         self.db_name = db_name
         self._conn = sqlite3.connect(self.db_name)
-        self.usr = User.User
+        self.usr = User
         self._cursor = self._conn.cursor()
 
-    def create(self, user: dict) -> None:
-        self._cursor.execute("INSERT INTO Users (name ,surname, password, Email) VALUES (?, ?, ?, ?)"
-                             , (user["name"], user["surname"], user["password"], user["email"]))
-        self._conn.commit()
+    def create(self, user: User) -> None:
+        try:
+            self._cursor.execute("INSERT INTO Users (name ,surname, password, Email) VALUES (?, ?, ?, ?)"
+                                 , (user.name, user.surname, user.password, user.email))
+            self._conn.commit()
+        except sqlite3.IntegrityError:
+            raise UserAlreadyExists("User already exists")
 
-    def read(self, email: str, password: str) -> dict:
+    def read(self, user: User) -> object | None:
         self._cursor.execute("SELECT * FROM Users where email = (?) and password = (?)",
-                             (email, password))
-        user = self._cursor.fetchall()
-        if user:
-            return self.usr.from_db(user)
-        return {}
+                             (user.email, user.password))
+        data = self._cursor.fetchall()
+        if data:
+            data = self.usr.from_db(data)
+            return data
+        return None
 
-    def update(self, user: dict) -> None:
+    def update(self, user: User) -> None:
         self._cursor.execute("Update users set name = (?), surname = (?), password = (?) where email = (?)",
-                             (user["name"], user["surname"], user["password"], user["email"]))
+                             (user.name, user.surname, user.password, user.email))
         self._conn.commit()
 
-    def delete(self, email: str) -> None:
-        self._cursor.execute('DELETE FROM users WHERE email = (?)', (email,))
+    def delete(self, user: User) -> None:
+        self._cursor.execute('DELETE FROM users WHERE email = (?)', (user.email,))
         self._conn.commit()
