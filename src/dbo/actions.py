@@ -1,7 +1,7 @@
-from Db import Db
-from Hash import Hasher
-from User import User
-from Exceptions import *
+from src.dbo.Db import Db
+from src.Utilities.Hash import Hasher
+from src.Entities.User import User
+from src.Utilities.Exceptions import *
 
 
 class Actions:
@@ -12,7 +12,7 @@ class Actions:
         if not self.__validate_data(credentials):
             raise ValidationError("Please fill all fields")
 
-        if not  self.__validate_email(credentials):
+        if not self.__validate_email(credentials):
             raise InvalidEmail("Invalid email")
 
         if not self.__validate_password(credentials):
@@ -31,14 +31,19 @@ class Actions:
 
         raise ValidationError("Please fill all fields")
 
+    def get_products(self):
+        return self.__database.get_products()
+
     def delete_account(self, user: User) -> None:
         self.__database.delete(user)
 
-    def change_password(self, user: User) -> bool | None:
+    def change_password(self, user: User, new_password: str) -> None:
+        user.password = new_password
         if self.__validate_password(user):
+            user.password = Hasher.hash_password(user.password)
             self.__database.update(user)
-            raise InvalidPassword("Invalid password")
-        return True
+            return
+        raise InvalidPassword("Invalid password")
 
     def __validate_data(self, credentials: User) -> bool:
         if "" in credentials.data:

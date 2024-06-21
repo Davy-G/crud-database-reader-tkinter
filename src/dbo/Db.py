@@ -1,6 +1,6 @@
 import sqlite3
-from User import User
-from Exceptions import *
+from src.Entities.User import User
+from src.Utilities.Exceptions import *
 
 
 class Db:
@@ -35,3 +35,7 @@ class Db:
     def delete(self, user: User) -> None:
         self._cursor.execute('DELETE FROM users WHERE email = (?)', (user.email,))
         self._conn.commit()
+
+    def get_products(self):
+        self._cursor.execute("SELECT * FROM products")
+        return self._cursor.fetchall()

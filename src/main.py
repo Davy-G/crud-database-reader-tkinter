@@ -1,4 +1,4 @@
-from src.Gui import App
+from src.Style.Gui import App
 
 
 def main():
@@ -8,5 +8,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
