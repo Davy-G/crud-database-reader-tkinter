@@ -24,6 +24,12 @@ class User:
         self.password = None
         self.email = None
 
+    def strip(self):
+        self.name = self.name.strip()
+        self.surname = self.surname.strip()
+        self.email = self.email.strip()
+        self.password = self.password.strip()
+
 # class UserSession(User):
 #     def __init__(self, user: object):
 #         super().__init__()
