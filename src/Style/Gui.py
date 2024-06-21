@@ -92,6 +92,7 @@ class App(CTk):
         if resp.get() == "ok":
             self.cursor.delete_account(usr)
             self.user.reset()
+
             # this is to make sure user is reset in every instance
             self.create_frame((StartPage, RegistrationPage, Cabinet))
             self.show_frame(StartPage)

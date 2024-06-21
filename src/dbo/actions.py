@@ -46,7 +46,7 @@ class Actions:
         raise InvalidPassword("Invalid password")
 
     def __validate_data(self, credentials: User) -> bool:
-        if "" in credentials.data:
+        if "" or " " in credentials.data:
             return False
         return True
 
